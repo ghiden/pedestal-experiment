@@ -1,11 +1,15 @@
 (ns p-app.server
   (:gen-class) ; for -main method in uberjar
   (:require [io.pedestal.http :as server]
+            [io.pedestal.http.route :as route :refer [router]]
+            [ns-tracker.core :refer [ns-tracker]]
             [p-app.service :as service]))
 
 ;; This is an adapted service map, that can be started and stopped
 ;; From the REPL you can call server/start and server/stop on this service
 (defonce runnable-service (server/create-server service/service))
+
+(def modified-namespaces (ns-tracker "src"))
 
 (defn run-dev
   "The entry-point for 'lein run-dev'"
@@ -17,7 +21,10 @@
               ::server/join? false
               ;; Routes can be a function that resolve routes,
               ;;  we can use this to set the routes to be reloadable
-              ::server/routes #(deref #'service/routes)
+              ::server/routes (fn []
+                                (doseq [ns-sym (modified-namespaces)]
+                                  (require ns-sym :reload))
+                                service/routes)
               ;; all origins are allowed in dev mode
               ::server/allowed-origins {:creds true :allowed-origins (constantly true)}})
       ;; Wire up interceptor chains

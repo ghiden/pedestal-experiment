@@ -12,6 +12,9 @@
                  ;; [io.pedestal/pedestal.immutant "0.4.1"]
                  ;; [io.pedestal/pedestal.tomcat "0.4.1"]
 
+                 ;; watch file changes
+                 [ns-tracker "0.3.0"]
+
                  [ch.qos.logback/logback-classic "1.1.3" :exclusions [org.slf4j/slf4j-api]]
                  [org.slf4j/jul-to-slf4j "1.7.12"]
                  [org.slf4j/jcl-over-slf4j "1.7.12"]
